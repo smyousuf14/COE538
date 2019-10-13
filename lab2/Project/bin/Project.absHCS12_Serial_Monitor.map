@@ -24,11 +24,12 @@ SECTION-ALLOCATION SECTION
 Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .stack                           256   R/W     0x2400     0x24FF   RAM
-main.asm__ORG00002                19     R     0x4000     0x4012   .absSeg0
-.vectSeg1_vect                     2     R     0xFFFE     0xFFFF   .vectSeg1
+main.asm__ORG00001                10     R     0x3000     0x3009   .absSeg0
+main.asm__ORG00002               240     R     0x4000     0x40EF   .absSeg1
+.vectSeg2_vect                     2     R     0xFFFE     0xFFFF   .vectSeg2
 
 Summary of section sizes per section type:
-READ_ONLY (R):          15 (dec:       21)
+READ_ONLY (R):          FC (dec:      252)
 READ_WRITE (R/W):      100 (dec:      256)
 
 *********************************************************************************************
@@ -45,31 +46,80 @@ MODULE:                 -- main.asm.o --
 - PROCEDURES:
      Entry                                     4000       6       6       0   .init       
      _Startup                                  4000       0       0       0   .init       
-     MainLoop                                  4006       6       6       0   .init       
-     Delay                                     400C       7       7       0   .init       
+     MainLoop                                  4006      52      82       0   .init       
+     msg1                                      4058      11      17       0   .init       
+     initLCD                                   4069      1D      29       0   .init       
+     clrLCD                                    4086       C      12       0   .init       
+     del_50us                                  4092       1       1       0   .init       
+     eloop                                     4093       3       3       0   .init       
+     iloop                                     4096      16      22       0   .init       
+     cmd2LCD                                   40AC       7       7       0   .init       
+     putsLCD                                   40B3       9       9       0   .init       
+     donePS                                    40BC       1       1       0   .init       
+     putcLCD                                   40BD       7       7       0   .init       
+     dataMov                                   40C4      1D      29       0   .init       
+     leftHLF                                   40E1       4       4       0   .init       
+     rightHLF                                  40E5       A      10       0   .init       
+     out                                       40EF       1       1       0   .init       
 - VARIABLES:
+     FIRST_HEX                                 3000       1       1       0   .text       
+     SECOND_HEX                                3001       1       1       0   .text       
+     THIRD_HEX                                 3002       1       1       0   .text       
+     MEM1                                      3003       1       1       0   .text       
+     MEM2                                      3004       1       1       0   .text       
+     MEM3                                      3005       1       1       0   .text       
+     MEM4                                      3006       1       1       0   .text       
+     MEM5                                      3007       1       1       0   .text       
+     MEM6                                      3008       1       1       0   .text       
+     MEM7                                      3009       1       1       0   .text       
 
 *********************************************************************************************
 MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
-  main.asm.o                                   0     19      0
+  main.asm.o                                   0    240     10
   other                                      256      2      0
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
+SECTION: ".text"
+  FIRST_HEX SECOND_HEX THIRD_HEX MEM1 MEM2 MEM3 MEM4 MEM5 MEM6 MEM7 
 SECTION: ".init"
-  _Startup Entry MainLoop Delay 
+  _Startup Entry MainLoop msg1 initLCD clrLCD del_50us eloop iloop cmd2LCD 
+  putsLCD donePS putcLCD dataMov leftHLF rightHLF out 
 
 *********************************************************************************************
 OBJECT LIST SORTED BY ADDRESS
      Name                                      Addr   hSize   dSize     Ref    Section   RLIB
 ---------------------------------------------------------------------------------------------
+     FIRST_HEX                                 3000       1       1       0   .text       
+     SECOND_HEX                                3001       1       1       0   .text       
+     THIRD_HEX                                 3002       1       1       0   .text       
+     MEM1                                      3003       1       1       0   .text       
+     MEM2                                      3004       1       1       0   .text       
+     MEM3                                      3005       1       1       0   .text       
+     MEM4                                      3006       1       1       0   .text       
+     MEM5                                      3007       1       1       0   .text       
+     MEM6                                      3008       1       1       0   .text       
+     MEM7                                      3009       1       1       0   .text       
      _Startup                                  4000       0       0       0   .init       
      Entry                                     4000       6       6       0   .init       
-     MainLoop                                  4006       6       6       0   .init       
-     Delay                                     400C       7       7       0   .init       
+     MainLoop                                  4006      52      82       0   .init       
+     msg1                                      4058      11      17       0   .init       
+     initLCD                                   4069      1D      29       0   .init       
+     clrLCD                                    4086       C      12       0   .init       
+     del_50us                                  4092       1       1       0   .init       
+     eloop                                     4093       3       3       0   .init       
+     iloop                                     4096      16      22       0   .init       
+     cmd2LCD                                   40AC       7       7       0   .init       
+     putsLCD                                   40B3       9       9       0   .init       
+     donePS                                    40BC       1       1       0   .init       
+     putcLCD                                   40BD       7       7       0   .init       
+     dataMov                                   40C4      1D      29       0   .init       
+     leftHLF                                   40E1       4       4       0   .init       
+     rightHLF                                  40E5       A      10       0   .init       
+     out                                       40EF       1       1       0   .init       
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
@@ -92,6 +142,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 2
-Total size of all blocks to be downloaded: 21
+Number of blocks to be downloaded: 3
+Total size of all blocks to be downloaded: 252
 
