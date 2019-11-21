@@ -117,23 +117,23 @@ NOT_START   CMPA #FWD
 NOT_FWD     CMPA #REV
             BNE NOT_REV
             JSR REV_ST
-            JSR DISP_EXIT
+            JMP DISP_EXIT
 
 NOT_REV     CMPA #ALL_STP
             BNE NOT_ALL_STOP
             JSR ALL_STP_ST
-            JSR DISP_EXIT
+            JMP DISP_EXIT
 
 NOT_ALL_STOP CMPA #FWD_TRN
             BNE NOT_FWD_TRN
             JSR FWD_TRN_ST
-            JSR DISP_EXIT                                                                               ; A
+            JMP DISP_EXIT                                                                               ; A
                                                          ; T
 NOT_FWD_TRN CMPA #REV_TRN ; Else if it’s the REV_TRN state C
             BNE NOT_REV_TRN ; H
             JSR REV_TRN_ST ; then call REV_TRN_ST routine E
-            BRA DISP_EXIT ; and exit R
-; |
+            JMP DISP_EXIT ; and exit R
+
 NOT_REV_TRN SWI ; Else the CRNT_ST is not defined, so stop |
 DISP_EXIT   RTS ; Exit from the state dispatcher ----------
 
@@ -149,7 +149,7 @@ START_EXIT  RTS ; return to the MAIN routine
 FWD_ST      BRSET PORTAD0,$04,NO_FWD_BUMP
             JSR   INIT_REV
             MOVB  #REV, CRNT_STATE ;
-            JMP   FWD_EXIT
+            JMP   FWD_EXIT; and return
 
 NO_FWD_BUMP BRSET PORTAD0,$08,NO_REAR_BUMP
             JSR   INIT_ALL_STP
@@ -499,7 +499,26 @@ TOF_ISR     INC TOF_COUNTER
 UPDT_DISPL  MOVB #$90,ATDCTL5 ; R-just., uns., sing. conv., mult., ch=0, start
             BRCLR ATDSTAT0,$80,* ; Wait until the conver. seq. is complete
             LDAA ATDDR0L ; Load the ch0 result - battery volt - into A
+			
             ; Display the battery voltage
+			MOVB #$90,ATDCTL5 ; R-just., uns., sing. conv., mult., ch=0, start
+            BRCLR ATDSTAT0,$80,* ; Wait until the conver. seq. is complete
+            LDAA ATDDR0L ; Load the ch0 result - battery volt - into A
+            LDAB #39 ;AccB = 39
+            MUL ;AccD = 1st result x 39
+            ADDD #600 ;AccD = 1st result x 39 + 600
+            JSR int2BCD
+            JSR BCD2ASC
+            LDAA #$8F ;move LCD cursor to the 1st row, end of msg1
+            JSR cmd2LCD ;"
+            LDAA TEN_THOUS ;output the TEN_THOUS ASCII character
+            JSR putcLCD ;"
+            LDAA THOUSANDS
+            JSR putcLCD
+            LDAA #$2E
+            JSR putcLCD
+            LDAA HUNDREDS
+            JSR putcLCD ; Display the battery voltage
             ;-------------------------
             LDAA #$C6 ; Move LCD cursor to the 2nd row, end of msg2
             JSR cmd2LCD ;
@@ -512,12 +531,10 @@ UPDT_DISPL  MOVB #$90,ATDCTL5 ; R-just., uns., sing. conv., mult., ch=0, start
             JSR putsLCD ; "
             RTS            
                                                 
-
 ;**************************************************************
 ;*                 Interrupt Vectors                          *
 ;**************************************************************
             ORG   $FFFE
-            DC.W  Entry           ; Reset Vector
-            
+            DC.W  Entry           ; Reset Vector       
             ORG $FFDE
             DC.W TOF_ISR ; Timer Overflow Interrupt Vector
