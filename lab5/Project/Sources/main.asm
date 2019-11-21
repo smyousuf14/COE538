@@ -117,23 +117,23 @@ NOT_START   CMPA #FWD
 NOT_FWD     CMPA #REV
             BNE NOT_REV
             JSR REV_ST
-            JSR DISP_EXIT
+            JMP DISP_EXIT
 
 NOT_REV     CMPA #ALL_STP
             BNE NOT_ALL_STOP
             JSR ALL_STP_ST
-            JSR DISP_EXIT
+            JMP DISP_EXIT
 
 NOT_ALL_STOP CMPA #FWD_TRN
             BNE NOT_FWD_TRN
             JSR FWD_TRN_ST
-            JSR DISP_EXIT                                                                               ; A
+            JMP DISP_EXIT                                                                               ; A
                                                          ; T
 NOT_FWD_TRN CMPA #REV_TRN ; Else if it’s the REV_TRN state C
             BNE NOT_REV_TRN ; H
             JSR REV_TRN_ST ; then call REV_TRN_ST routine E
-            BRA DISP_EXIT ; and exit R
-; |
+            JMP DISP_EXIT ; and exit R
+
 NOT_REV_TRN SWI ; Else the CRNT_ST is not defined, so stop |
 DISP_EXIT   RTS ; Exit from the state dispatcher ----------
 
@@ -149,7 +149,7 @@ START_EXIT  RTS ; return to the MAIN routine
 FWD_ST      BRSET PORTAD0,$04,NO_FWD_BUMP
             JSR   INIT_REV
             MOVB  #REV, CRNT_STATE ;
-            JMP   FWD_EXIT
+            JMP   FWD_EXIT; and return
 
 NO_FWD_BUMP BRSET PORTAD0,$08,NO_REAR_BUMP
             JSR   INIT_ALL_STP
