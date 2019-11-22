@@ -95,9 +95,9 @@ MAIN        JSR UPDT_DISPL ; ----------------------------------------- M
 ;*******************************************************************
 msg1        dc.b "Battery volt ",0
 msg2        dc.b "State ",0
-tab         dc.b "START ",0
-            dc.b "FWD ",0
-            dc.b "REV ",0
+tab         dc.b "START  ",0
+            dc.b "FWD    ",0
+            dc.b "REV    ",0
             dc.b "ALL_STP",0
             dc.b "FWD_TRN",0
             dc.b "REV_TRN",0
@@ -193,12 +193,18 @@ FWD_TRN_ST  LDAA TOF_COUNTER ; If Tc>Tfwdturn then
 NO_FWD_FT   NOP ; Else
 FWD_TRN_EXIT RTS ; return to the MAIN routine
 ;*******************************************************************
-REV_TRN_ST  LDAA TOF_COUNTER ; If Tc>Trevturn then
-            CMPA T_REV_TRN ; the robot should go FWD
-            BNE NO_FWD_RT ; so
-            JSR INIT_FWD ; initialize the FWD state
-            MOVB #FWD,CRNT_STATE ; set state to FWD
-            BRA REV_TRN_EXIT ; and return
+REV_TRN_ST  BRSET PORTAD0,$08,NO_REAR_BUMP2
+            JSR   INIT_ALL_STP
+            MOVB  #ALL_STP_ST,CRNT_STATE
+            JMP   FWD_EXIT;   
+            
+NO_REAR_BUMP2 LDAA TOF_COUNTER ; If Tc>Trevturn then
+             CMPA T_REV_TRN ; the robot should go FWD
+             BNE NO_FWD_RT ; so
+             JSR INIT_FWD_TRN ; initialize the FWD state
+             MOVB #FWD_TRN,CRNT_STATE ; set state to FWD
+             BRA REV_TRN_EXIT ; and return    
+             
 NO_FWD_RT   NOP ; Else
 REV_TRN_EXIT RTS ; return to the MAIN routine
 
